@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результаты поиска</title>
+</head>
+<body>
+    <h1>Результаты поиска</h1>
+    {% if routes_data %}
+    <table>
+        <thead>
+            <tr>
+                <th>Номер рейса</th>
+                <th>Тип транспорта</th>
+                <th>Сайт</th>
+                <th>Отправление из</th>
+                <th>Прибытие на</th>
+                <th>Время отправления</th>
+                <th>Время прибытия</th>
+                <th>Продолжительность, ч</th>
+                <th>Цена по ticket_info</th>
+                <th>Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for route in routes_data.segments %}
+            <tr>
+                <td>{{ route.thread.number }}</td>
+                <td>{{ route.thread.transport_type }}</td>
+                <td>{{ route.thread.url }}</td>
+                <td>{{ route.from.title }}</td>
+                <td>{{ route.to.title }}</td>
+                <td>{{ route.departure }}</td>
+                <td>{{ route.arrival }}</td>
+                <td>{{ route.duration / 3600 }}</td>
+
+                <td>{{ route.tickets_info  }}</td>
+
+                {% if route.tickets_info.price %}
+                <td>{{ route.tickets_info.price.total.amount }} {{ route.tickets_info.price }}</td>
+                {% else %}
+                <td>Неизвестно</td>
+                {% endif %}
+
+                {% if route.price %}
+                <td>{{ route.price.total.amount }} {{ route.price.total.currency }}</td>
+                {% else %}
+                <td>Неизвестно</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Нет рейсов по заданным параметрам.</p>
+    {% endif %}
+    <a href="/">Вернуться на главную страницу</a>
+</body>
+</html>

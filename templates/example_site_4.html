@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Выбор станций</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/example_site_4.js"></script>
+    <script src="/static/rout_map.js"></script>
+    <!-- <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=9431bf30-a1d4-4319-88e3-b17a8ad8830b" type="text/javascript"></script> -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=9431bf30-a1d4-4319-88e3-b17a8ad8830b&lang=ru_RU"></script>
+    <!-- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> -->
+</head>
+<body>
+    <!-- Скрытый элемент для передачи данных о станциях в скрипт -->
+    <div id="stations-data" hidden>{{ stations_data | tojson }}</div>
+    <h1>Выбор станций</h1>
+    <form action="/find_routes" method="post">
+        <fieldset>
+            <legend>Отправление</legend>
+            <label for="country-input-1">Страна:</label>
+            <input id="country-input-1" name="country-1" type="text" list="country-list-1" required>
+            <datalist id="country-list-1"></datalist>
+            <label for="region-input-1">Регион:</label>
+            <input id="region-input-1" name="region-1" type="text" list="region-list-1" required>
+            <datalist id="region-list-1"></datalist>
+            <label for="city-input-1">Город:</label>
+            <input id="city-input-1" name="city-1" type="text" list="city-list-1" required>
+            <datalist id="city-list-1"></datalist>
+        </fieldset>
+        <fieldset>
+            <legend>Прибытие</legend>
+            <label for="country-input-2">Страна:</label>
+            <input id="country-input-2" name="country-2" type="text" list="country-list-2" required>
+            <datalist id="country-list-2"></datalist>
+            <label for="region-input-2">Регион:</label>
+            <input id="region-input-2" name="region-2" type="text" list="region-list-2" required>
+            <datalist id="region-list-2"></datalist>
+            <label for="city-input-2">Город:</label>
+            <input id="city-input-2" name="city-2" type="text" list="city-list-2" required>
+            <datalist id="city-list-2"></datalist>
+        </fieldset>
+        <label for="date-input">Дата:</label>
+        <input id="date-input" name="date" type="date" required>
+        <button type="submit">Найти рейсы</button>
+        
+    </form>
+    <form action="/find_routes" method="post"></form>
+      <button id="showRouteButton">Отобразить карту маршрута</button>
+    </form>
+    <div id="map" style="width: 600px; height: 400px;"></div>
+</body>
+</html>
+
+<!-- <script>
+    // Получить элементы формы
+let form = document.querySelector("form");
+let button = document.querySelector("button");
+
+// Добавить обработчик события нажатия кнопки
+button.addEventListener("click", function(event) {
+  // Отменить стандартное поведение формы
+  event.preventDefault();
+
+  // Получить значения из input
+  let fromCity = document.getElementById("city-input-1").value;
+  let toCity = document.getElementById("city-input-2").value;
+
+  // Проверить, что значения не пустые
+  if (fromCity && toCity) {
+    // Отправить форму на сервер
+    form.submit();
+  } else {
+    // Вывести сообщение об ошибке
+    alert("Пожалуйста, выберите города отправления и прибытия.");
+  }
+});</script> -->
+
+</html>
