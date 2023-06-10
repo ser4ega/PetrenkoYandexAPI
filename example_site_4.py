@@ -2,6 +2,16 @@ from flask import Flask, render_template, request
 import requests
 API_KEY = '1d5197db-641b-460e-a97e-750e0311d94c'
 app = Flask(__name__)
+
+@app.route('/example_site_4')
+def example_site_4():
+    return render_template('example_site_4.html')
+
+@app.route('/routes')
+def routes():
+    return render_template('routes.html')
+
+
 stations_data = {}
 # Получить данные о станциях от яндекс апи
 def get_stations():
@@ -11,7 +21,7 @@ def get_stations():
     return data
 
 # Получить данные о рейсах от яндекс апи
-def get_routes(from_city, to_city,transport_type, date):
+def get_routes(from_city, to_city, date,transport_type):
     # transport_type = "plane" 
     #    
     # Получить коды станций по названиям городов
@@ -19,7 +29,7 @@ def get_routes(from_city, to_city,transport_type, date):
     to_code = next(city["codes"]["yandex_code"] for country in stations_data["countries"] for region in country["regions"] for city in region["settlements"] if city["title"] == to_city)
     
     # Сформировать url запроса с параметрами
-    url = f"https://api.rasp.yandex.net/v3.0/search/?apikey={API_KEY}&lang=ru_RU&format=json&from={from_code}&to={to_code}&date={date}"
+    url = f"https://api.rasp.yandex.net/v3.0/search/?apikey={API_KEY}&lang=ru_RU&format=json&from={from_code}&to={to_code}&date={date}&transport_types={transport_type}"
 
     # Отправить запрос и получить ответ
     response = requests.get(url)
@@ -41,8 +51,9 @@ def find_routes():
     from_city = request.form.get("city-1")
     to_city = request.form.get("city-2")
     date = request.form.get("date")
+    transport_type = request.form.get("transport_type")
     # Получить данные о рейсах и передать их в шаблон
-    routes_data = get_routes(from_city, to_city,"plane", date)
+    routes_data = get_routes(from_city, to_city, date,transport_type)
     return render_template("routes.html", routes_data=routes_data)
 
 @app.route("/route_map")
