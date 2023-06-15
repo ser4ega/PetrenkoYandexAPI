@@ -89,7 +89,7 @@ function runScript() {
 
   // Получить данные о станциях из шаблона
   let stationsData = JSON.parse(document.getElementById("stations-data").textContent);
-
+  localStorage.setItem("stationsData", stationsData);
   // Получить массивы стран, регионов и городов из данных о станциях
   let countries = getUniqueValues(stationsData.countries.map(country => country.title));
   // let regions = getUniqueValues(stationsData.countries.flatMap(country => country.regions.map(region => region.title)));
@@ -302,7 +302,7 @@ function runScript() {
       map.controls.add("typeSelector");
       }
       var route;
-      route = solveTSP(coordinates);
+      route = solveTSP(coordinates, false);
       // Формируем URL для запроса к HTTP Геокодеру по координатам
       if (transport_type.value === "plane") 
       {
@@ -461,6 +461,64 @@ fieldset.addEventListener("input", function(event) {
       updateDatalist(input, datalist, cityNames);
     }
   }
+});
+
+  // Функция для сохранения пар регионов-городов в localstorage
+function saveRegionsCities() {
+  // Создаем пустой массив для хранения пар
+  let regionsCities = [];
+  // Получаем все элементы input с атрибутом name, начинающимся с "region-" или "city-"
+  let inputs = document.querySelectorAll("input[name^='region-'], input[name^='city-']");
+  // Проходим по всем элементам input и добавляем их значения в массив в виде объектов {region: ..., city: ...}
+  for (let i = 0; i < inputs.length; i += 2) {
+    // Проверяем, что оба значения не пустые
+    if (inputs[i].value && inputs[i+1].value) {
+      // Добавляем объект с регионом и городом в массив
+      regionsCities.push({region: inputs[i].value, city: inputs[i+1].value});
+    }
+  }
+  // Преобразуем массив в строку JSON и сохраняем в localstorage под ключом "regionsCities"
+  localStorage.setItem("regionsCities", JSON.stringify(regionsCities));
+}
+
+// Функция для извлечения пар регионов-городов из localstorage и заполнения формы
+function loadRegionsCities() {
+  // Получаем строку JSON из localstorage по ключу "regionsCities"
+  let regionsCities = localStorage.getItem("regionsCities");
+  // Проверяем, что строка не пустая
+  if (regionsCities) {
+    // Преобразуем строку в массив объектов
+    regionsCities = JSON.parse(regionsCities);
+    // Проходим по всем объектам в массиве и заполняем соответствующие элементы input в форме
+    for (let i = 0; i < regionsCities.length; i++) {
+      // Получаем элементы input с атрибутом name, равным "region-" + (i+1) или "city-" + (i+1)
+      let regionInput = document.querySelector("input[name='region-" + (i+1) + "']");
+      let cityInput = document.querySelector("input[name='city-" + (i+1) + "']");
+      // Проверяем, что элементы существуют
+      if (regionInput && cityInput) {
+        // Заполняем элементы значениями из объекта
+        regionInput.value = regionsCities[i].region;
+        cityInput.value = regionsCities[i].city;
+      } else {
+        // Если элементов нет, значит нужно добавить новую строку в форму
+        addCity();
+        // Повторяем те же действия для новых элементов
+        regionInput = document.querySelector("input[name='region-" + (i+1) + "']");
+        cityInput = document.querySelector("input[name='city-" + (i+1) + "']");
+        regionInput.value = regionsCities[i].region;
+        cityInput.value = regionsCities[i].city;
+      }
+    }
+  }
+}
+// Получаем элемент формы по атрибуту action
+let form = document.querySelector("form[action='/find_routes']");
+// Добавляем обработчик события submit на форму
+form.addEventListener("submit", function(event) {
+  // Вызываем функцию для сохранения пар регионов-городов в localstorage
+  saveRegionsCities();
+  // Возвращаем true, чтобы продолжить отправку формы
+  return true;
 });
 
 
